@@ -1,0 +1,46 @@
+from time import time
+from functools import wraps
+import sys
+import cProfile
+
+def timefn(fn):
+    @wraps(fn)
+    def measure_time(*args, **kwargs):
+        t1 = time()
+        result = fn(*args, **kwargs)
+        t2 = time() -t1
+        print('Method {} took {} seconds.'.format(fn.__name__, t2), end = '\n')
+        return result
+    return measure_time
+@timefn
+def sqarea(x: int, y: int) -> int:
+    xy_area = x * y
+    print('the square area is {} units^2'.format(xy_area), end = '\n')
+    return xy_area
+@timefn
+def cubevol(x: int, y: int, z: int) -> int:
+    xyz_vol = x * y * z
+    print('the cubic volume is {} units^3'.format(xyz_vol), end = '\n')
+    return xyz_vol
+@timefn
+def sqperim (x: int, y: int) -> int:
+    tupl = (2*x, 2*y)
+    xy_perim = sum(iter(tupl))# integer objects can not be converted as an iterable object directly 
+    print('the square perimeter is {} units'.format(xy_perim), end = '\n')
+    
+    return xy_perim
+@timefn
+def varPerim(*num) -> int:
+    perimeter = sum(iter(num)) #tuples are not iterable objects. use iter() to return an iterable object
+    print('The total perimeter is {} units.'.format(perimeter), end = '\n')
+    return perimeter
+if __name__ == '__main__':
+    sqarea(2,4)
+    print('The memory used in {} is {} bytes'.format(sqarea.__name__, sys.getsizeof(sqarea)), end = '.\n')
+    cubevol(2,4,2)
+    print('The memory used in {} is {} bytes'.format(cubevol.__name__, sys.getsizeof(cubevol)), end = '.\n')
+    sqperim(2,4)
+    print('The memory used in {} is {} bytes'.format(sqperim.__name__, sys.getsizeof(sqperim)), end = '.\n')
+    varPerim(2,3,4,5,5,5)
+    print('The memory used in {} is {} bytes'.format(varPerim.__name__, sys.getsizeof(varPerim)), end = '.\n')
+    cProfile.run('sqarea(2,4)')
